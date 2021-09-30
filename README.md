@@ -257,7 +257,7 @@ This can be useful for having different Prometheus servers collect specific metr
 
 Prerequisites:
 
-* [Go compiler](https://golang.org/dl/)
+* [Go compiler](https://golang.org/dl/) (v1.16)
 * RHEL/CentOS: `glibc-static` package.
 
 Building:
