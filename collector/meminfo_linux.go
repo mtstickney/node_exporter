@@ -53,6 +53,10 @@ func parseMemInfo(r io.Reader) (map[string]float64, error) {
 		if len(parts) == 0 {
 			continue
 		}
+		if len(parts) < 2 || len(parts) > 3 {
+			return nil, fmt.Errorf("invalid line in meminfo: %s", line)
+		}
+
 		fv, err := strconv.ParseFloat(parts[1], 64)
 		if err != nil {
 			return nil, fmt.Errorf("invalid value in meminfo: %w", err)
@@ -60,14 +64,14 @@ func parseMemInfo(r io.Reader) (map[string]float64, error) {
 		key := parts[0][:len(parts[0])-1] // remove trailing : from key
 		// Active(anon) -> Active_anon
 		key = reParens.ReplaceAllString(key, "_${1}")
-		switch len(parts) {
-		case 2: // no unit
-		case 3: // has unit, we presume kB
+
+		// unitless values are assumed to be in bytes; unitted values
+		// are presumed to be kB.
+		if len(parts) == 3 {
 			fv *= 1024
 			key = key + "_bytes"
-		default:
-			return nil, fmt.Errorf("invalid line in meminfo: %s", line)
 		}
+
 		memInfo[key] = fv
 	}
 
