@@ -37,4 +37,15 @@ func TestMemInfo(t *testing.T) {
 	if want, got := 3787456512.0, memInfo["DirectMap2M_bytes"]; want != got {
 		t.Errorf("want memory directMap2M %f, got %f", want, got)
 	}
+
+	shortLineFile, err := os.Open("fixtures/proc/meminfo_short_line")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer shortLineFile.Close()
+
+	memInfo, err = parseMemInfo(shortLineFile)
+	if err == nil {
+		t.Fatal("No error triggered for too-short meminfo line")
+	}
 }
